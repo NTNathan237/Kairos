@@ -1,0 +1,21 @@
+{
+  "name": "kairos",
+  "version": "1.0.0",
+  "description": "Backend du projet kairos",
+  "license": "ISC",
+  "author": "GGX",
+  "type": "commonjs",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "nodemon index.js"
+  },
+  "dependencies": {
+    "express": "^5.2.1",
+    "nodemon": "^3.1.14",
+    "pg": "^8.23.0",
+    "pg-promise": "^12.7.0",
+    "socket.io": "^4.8.3"
+  }
+}
+ 

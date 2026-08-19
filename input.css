@@ -1,0 +1,22 @@
+@import "tailwindcss";
+
+@theme {
+    --color-main: #064A8F;
+}
+@layer components{
+    .button{
+        @apply rounded-lg bg-main text-white p-2 mt-2 cursor-pointer hover:shadow-lg
+    }
+    .head_cel{
+        @apply  text-center py-2 text-white bg-main
+    }
+    .week-row{
+        @apply grid grid-cols-8 gap-0 justify-center
+    }
+    .week_cel{
+        @apply border-main border text-center bg-white text-main flex flex-col justify-start gap-1 px-2 py-0.5 min-h-[100px]
+    }
+    .task{
+        @apply flex flex-row justify-between items-center
+    }
+}
