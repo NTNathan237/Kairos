@@ -207,30 +207,38 @@ app.get("/kairos/semaine", (req, res) => {
 
 app.delete("/kairos/semaine/:id", (req, res) => {
   const id_semaine = req.params.id;
-  const sql_del_semaine = "DELETE FROM semaine WHERE id_semaine = $1";
+  const sql_del_semaine = "DELETE FROM semaine WHERE id_semaine = $1 RETURNING id_semaine";
   DB.query(sql_del_semaine, [id_semaine], (err, result) => {
     if (err) {
       console.error("Erreur DB: ", err);
       res.sendStatus(500);
     } else {
-      res.sendStatus(200);
+      const sql_del_ass = "DELETE FROM assignation WHERE id_semaine=$1"
+      DB.query(sql_del_ass, [result.rows[0].id_semaine], (err, result) => {
+        if (err) {
+          console.error("Erreur DB: ", err);
+          res.sendStatus(500);
+        } else {
+          res.sendStatus(200);
+        }
+      });
     }
   });
 });
 
 app.post("/kairos/assignation", (req, res) => {
-  const { libelle, jour, id_semaine, etat } = req.body;
+  const { libelle, jour, id_semaine, id_tache } = req.body;
   const sql_insert_assing =
-    "INSERT INTO assignation(libelle,jour,id_semaine,etat) VALUES($1,$2,$3,$4)";
+    "INSERT INTO assignation(libelle,jour,id_semaine,etat,id_tache) VALUES($1,$2,$3,$4,$5) RETURNING id_ass";
   DB.query(
     sql_insert_assing,
-    [libelle, jour, id_semaine, etat],
+    [libelle, jour, id_semaine, "en_attente",id_tache],
     (err, result) => {
       if (err) {
         console.error("Erreur DB: ", err);
         res.sendStatus(500);
       } else {
-        res.sendStatus(200);
+        res.status(200).json(result);
       }
     },
   );
@@ -248,8 +256,9 @@ app.get("/kairos/assignation", (req, res) => {
   });
 });
 
-app.patch("kairos/assignation", (req, res) => {
-  const { id_ass, etat } = req.body;
+app.put("/kairos/assignation/:id", (req, res) => {
+  const id_ass = req.params.id
+  const { etat } = req.body;
   const sql_modif_ass = "UPDATE assignation SET etat=$1 WHERE id_ass=$2";
   DB.query(sql_modif_ass, [etat, id_ass], (err, result) => {
     if (err) {
@@ -263,7 +272,7 @@ app.patch("kairos/assignation", (req, res) => {
 
 app.delete("/kairos/assignation/:id", (req, res) => {
   const id_ass = req.params.id;
-  const sql_del_ass = "DELETE FORM assignation WHERE id_ass = $1";
+  const sql_del_ass = "DELETE FROM assignation WHERE id_ass = $1";
   DB.query(sql_del_ass, [id_ass], (err, result) => {
     if (err) {
       console.error("Erreur DB: ", err);

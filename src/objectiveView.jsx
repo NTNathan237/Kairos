@@ -2,7 +2,7 @@ import React, { useEffect, useRef, useState } from 'react'
 const API_URL = 'http://localhost:3000'
 
 
-const Obj = ({ obj, objs, etat_obj, setObjs }) => {
+const Obj = ({ obj, objs, setObjs }) => {
 
   let [etat, setEtat] = useState(obj.etat || "en_attente");
 
@@ -17,15 +17,14 @@ const Obj = ({ obj, objs, etat_obj, setObjs }) => {
   return (
     <div className="bg-[#D3D3D3] w-[95%] left-0 justify-between flex flex-row border-[1px] border-l-0 border-main my-2 py-1 px-5 gap-5">
       <div className="flex flex-col gap-1">
-        <h2 className="text-main text-[18px]">{obj.libelle} </h2>
+        <h2 className="text-main text-[18px] font-medium">{obj.libelle} </h2>
         <select
           id="select"
           value={etat}
           onChange={(e) => {
             setEtat(e.target.value);
             const id_objectif = obj.id_objectif
-            e.target.className = `rounded-full w-[100px] text-[12px] font-semibold `;
-            objs = objs.with(objs.findIndex(o => o.id_objectif === id_objectif),
+            setObjs(objs.with(objs.findIndex(o => o.id_objectif === id_objectif),
               {
                 id_objectif: obj.id_objectif,
                 type: obj.type,
@@ -33,7 +32,7 @@ const Obj = ({ obj, objs, etat_obj, setObjs }) => {
                 etat: e.target.value
 
               }
-            )
+            ))
             fetch(`${API_URL}/kairos/objectif/${id_objectif}`, {
               method: "PUT",
               headers: {
@@ -41,7 +40,6 @@ const Obj = ({ obj, objs, etat_obj, setObjs }) => {
               },
               body: JSON.stringify({ etat:e.target.value })
             })
-            console.log(objs)
 
           }}
           className={`rounded-full w-[100px] text-[12px] p-0.5 font-semibold ${themes_etats[etat]}`}
@@ -209,7 +207,7 @@ const ObjectiveView = () => {
 
               return (
                 <>
-                  <h3 className='text-main pt-5 pb-3 text-center text-[20px] font-bold flex flex-row gap-4 justify-center'><span>{type.libelle}</span>
+                  <h3 className='text-main pt-5 pb-3 text-center text-[20px]  font-bold flex flex-row gap-4 justify-center'><span>{type.libelle}</span>
                     <span className='font-bold text-red-500 cursor-pointer'
                       onClick={() => {
                         if (confirm("Cette action va supprimer toutes les taches concernées")) {

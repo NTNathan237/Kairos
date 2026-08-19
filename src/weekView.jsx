@@ -8,8 +8,8 @@ function formatter_date_sql(dateSQL) {
   return d.toLocaleDateString()
 }
 
-const Task = ({ etat_tache, libelle, id }) => {
-  let [etat, setEtat] = useState(etat_tache || 'en_attente');
+const Task = ({ ass, setAss, assignations }) => {
+  let [etat, setEtat] = useState(ass.etat || 'en_attente');
 
   const themes_etats = {
     en_attente: "text-main bg-blue-300",
@@ -17,29 +17,55 @@ const Task = ({ etat_tache, libelle, id }) => {
     fait: "text-[#009600] bg-green-300",
   };
   return (
-    <div className='task' id={id}>
+    <div className='task' id={ass.id_ass}>
 
-      <span className='text-[12px] font-semibold'>{libelle}</span>
+      <span className='text-[12px] font-semibold'>{ass.libelle}</span>
       <select
         id="select"
         value={etat}
         onChange={(e) => {
           setEtat(e.target.value);
-          e.target.className = `rounded-full w-[40px] text-[8px] font-semibold ${themes_etats[e.target.value]}`;
-        }}
+          const id_ass = ass.id_ass
+          setAss(assignations.with(assignations.findIndex(as => as.id_ass === id_ass),
+            {
+              id_ass: ass.id_ass,
+              id_tache: ass.id_tache,
+              libelle: ass.libelle,
+              jour: ass.jour,
+              id_semaine: ass.id_semaine,
+              etat: e.target.value
+
+            }
+          ))
+          fetch(`${API_URL}/kairos/assignation/${id_ass}`, {
+            method: "PUT",
+            headers: {
+              'Content-type': 'application/json',
+            },
+            body: JSON.stringify({ etat: e.target.value })
+          }
+          )
+        }
+        }
         className={`rounded-full w-[40px] text-[8px] font-semibold ${themes_etats[etat]}`}
       >
         <option value="en_attente">En attente</option>
         <option value="fait">Fait</option>
         <option value="echec">Echec</option>
       </select>
-      <button className='text-red-600 cursor-pointer'>X</button>
+      <button className='text-red-600 cursor-pointer' onClick={() => {
+        const id_ass = ass.id_ass
+        fetch(`${API_URL}/kairos/assignation/${id_ass}`, {
+          method: 'DELETE'
+        })
+        setAss(assignations.filter(o => o.id_ass !== id_ass))
+      }}>X</button>
 
     </div>
   )
 }
 
-const JourCell = ({ jour, id_semaine, assignations }) => {
+const JourCell = ({ jour, id_semaine, assignations, setAss }) => {
   const { setNodeRef, isOver } = useDroppable({
     id: `${jour}-${id_semaine}`,
     data: { jour, id_semaine },
@@ -49,25 +75,29 @@ const JourCell = ({ jour, id_semaine, assignations }) => {
     <div ref={setNodeRef} className={`week_cel ${isOver ? 'bg-blue-100' : ''}`}>
       {assignations
         .filter(a => a.jour === jour && a.id_semaine === id_semaine)
-        .map(a => <Task key={a.id} id={a.id} libelle={a.libelle} etat_tache={a.etat} />)}
+        .map(a => <Task key={a.id} ass={a} setAss={setAss} assignations={assignations} />)}
     </div>
   )
 }
 
-const WeekRow = ({ assignations, infos_semaine, semaines, setSemaines }) => {
+const WeekRow = ({ assignations, infos_semaine, semaines, setSemaines, setAss }) => {
+  console.log(assignations)
+  let nbre_taches = assignations.filter(ass=>ass.id_semaine==infos_semaine.id_semaine).length
+  const note = assignations.filter(ass=>ass.id_semaine==infos_semaine.id_semaine).filter(ass=>ass.etat=='fait').length
+  console.log(nbre_taches)
   return (
     <div className='week-row'>
       <div className='week_cel flex flex-col justify-evenly'>
         <h3 className='font-semibold'>{infos_semaine.date}</h3>
+        { }
         {
-          infos_semaine.note < infos_semaine.nbre_taches / 2 ?
-            <h3 className='font-semibold text-blue-950'><span className='text-red-500'>{infos_semaine.note}</span>/{infos_semaine.nbre_taches}</h3>
+          note < nbre_taches / 2 ?
+            <h3 className='font-semibold text-blue-950'><span className='text-red-500'>{note}</span>/{nbre_taches}</h3>
 
-            : infos_semaine.note >= infos_semaine.nbre_taches / 2 && infos_semaine.note < (infos_semaine.nbre_taches * 3) / 4 ?
-              <h3 className='font-semibold text-blue-950'><span className='text-amber-500'>{infos_semaine.note}</span>/{infos_semaine.nbre_taches}</h3>
+            : note >= nbre_taches / 2 && note < (nbre_taches * 3) / 4 ?
+              <h3 className='font-semibold text-blue-950'><span className='text-amber-500'>{note}</span>/{nbre_taches}</h3>
               :
-              <h3 className='font-semibold text-blue-950'><span className='text-green-700'>{infos_semaine.note}</span>/{infos_semaine.nbre_taches}</h3>
-
+              <h3 className='font-semibold text-blue-950'><span className='text-green-700'>{note}</span>/{nbre_taches}</h3>
         }
         <button className='button bg-red-700 p-[1px]' onClick={() => {
           const id_semaine = infos_semaine.id_semaine
@@ -95,19 +125,16 @@ const WeekRow = ({ assignations, infos_semaine, semaines, setSemaines }) => {
           jour={jour}
           id_semaine={infos_semaine.id_semaine}
           assignations={assignations}
+          setAss={setAss}
         />
       ))}
     </div>
   )
 }
 
-const WeekView = ({assignations,setAss}) => {
-  
-  let [semaines, setSemaines] = useState([
-    { id_semaine: 1, date: '08/07/2026', note: 27, nbre_taches: 29 },
-    { id_semaine: 3, date: '09/07/2026', note: 15, nbre_taches: 26 },
-    { id_semaine: 2, date: '90/07/2026', note: 10, nbre_taches: 24 },
-  ])
+const WeekView = ({ assignations, setAss }) => {
+
+  let [semaines, setSemaines] = useState([])
   useEffect(() => {
 
     async function fetchSemaines() {
@@ -115,7 +142,6 @@ const WeekView = ({assignations,setAss}) => {
         method: 'Get',
       })
       const data = await res.json()
-      console.log(data)
       if (data) {
         setSemaines([
           ...semaines,
@@ -149,7 +175,7 @@ const WeekView = ({assignations,setAss}) => {
         <div className='head_cel rounded-tr-lg'>Dimanche</div>
       </div>
       {semaines.map(semaine => (
-        <WeekRow key={semaine.id_semaine} assignations={assignations} infos_semaine={semaine} semaines={semaines} setSemaines={setSemaines} />
+        <WeekRow key={semaine.id_semaine} assignations={assignations} infos_semaine={semaine} semaines={semaines} setSemaines={setSemaines} setAss={setAss} />
       ))}
       <div className='flex justify-center items-center week-row'>
         <button className='button bg-green-800' onClick={() => setAjout_semaine(true)}>Ajouter une semaine</button>
@@ -177,7 +203,6 @@ const WeekView = ({assignations,setAss}) => {
                     body: JSON.stringify({ date })
                   });
                   const data = await res.json()
-                  console.log(data.rows[0])
                   setSemaines([
                     ...semaines,
                     {

@@ -1,27 +1,32 @@
 // App.jsx
-import React, { useState } from 'react'
+import React, { useEffect, useState } from 'react'
 import { DndContext } from '@dnd-kit/core'
 import ObjectiveView from './objectiveView'
 import WeekView from './weekView'
 import TasksView from './tasksView'
+const API_URL = 'http://localhost:3000'
 
 const tachesInitiales = [
   { id_tache: 1, libelle: 'Tache 1' },
   { id_tache: 2, libelle: 'Tache 2' },
   { id_tache: 3, libelle: 'Tâche 3' },
-  { id_tache: 4, libelle: 'Tâche 4' },
-  { id_tache: 5, libelle: 'Tâche 5' },
 ]
 
-const semaines = [
-  { id_semaine: 1, date: '08/07/2026', note: 27, nbre_taches: 29 },
-  { id_semaine: 3, date: '09/07/2026', note: 15, nbre_taches: 26 },
-  { id_semaine: 2, date: '10/07/2026', note: 10, nbre_taches: 24 },
-]
 
 const App = () => {
-  const [taches, setTaches] = useState(tachesInitiales) 
-  const [assignations, setAssignations] = useState([]) 
+  const [taches, setTaches] = useState(tachesInitiales)
+  const [assignations, setAssignations] = useState([])
+
+  useEffect(()=>{
+    async function fetchAss() {
+      const res = await fetch(`${API_URL}/kairos/assignation`, {
+        method: 'Get',
+      })
+      const data = await res.json()
+      setAssignations(data)
+    }
+    fetchAss();
+  },[])
 
   function handleDragEnd(event) {
     const { active, over } = event
@@ -30,23 +35,33 @@ const App = () => {
     const tache = active.data.current.tache
     const { jour, id_semaine } = over.data.current
 
-    setAssignations(prev => [
-      ...prev,
-      {
-        id: crypto.randomUUID(),
-        tache_id: tache.id,
-        libelle: tache.libelle, 
-        jour,
-        id_semaine,
-        etat: 'en_attente',
-      },
-    ])
-    
+    async function ajout_ass() {
+      const res = await fetch(`${API_URL}/kairos/assignation`, {
+        method: "POST",
+        headers: {
+          'Content-type': 'application/json',
+        },
+        body: JSON.stringify({ libelle: tache.libelle, jour, id_semaine, id_tache: tache.id_tache })
+      })
+      const data = await res.json()
+      setAssignations([
+        ...assignations,
+        {
+          id_ass: data.rows[0].id_ass,
+          id_tache: tache.id_tache,
+          libelle: tache.libelle,
+          jour,
+          id_semaine,
+          etat:"en_attente"
+        }
+      ])
+    }
+    ajout_ass();
   }
 
   return (
     <DndContext onDragEnd={handleDragEnd}>
-      <> 
+      <>
 
         <header className='flex justify-around flex-row  items-center h-[80px] bg-white-500 text-lg p-5 top-0 bg-white mb-5'>
           <h1 className='text-main font-extrabold text-[40px] animate-bounce'>Kairos</h1>
@@ -55,7 +70,7 @@ const App = () => {
 
         <main className='bg-gray-300 pt-5 flex flex-row gap-[20px] justify-center items-end'>
           <ObjectiveView />
-          <WeekView semaines={semaines} assignations={assignations} />
+          <WeekView  assignations={assignations} setAss={setAssignations} />
           <TasksView taches={taches} setTaches={setTaches} />
         </main>
 
