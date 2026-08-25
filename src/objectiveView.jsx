@@ -94,7 +94,7 @@ const ObjectiveView = () => {
   return (
     <>
       <div className='w-[445px] bg-white rounded-tr-lg h-[960px] overflow-auto'>
-        <div className='sticky top-0 left-0 text-center bg-main py-5'>
+        <div className='top-0 left-0 text-center bg-main py-5'>
           <h2 className='text-white font-bold text-[25px]'>Objectifs</h2>
         </div>
         <div className='flex justify-center wrap gap-6'>
@@ -142,7 +142,7 @@ const ObjectiveView = () => {
                         try {
                           ajout_objectif();
                           alert("Ajout reussi");
-                          setAjout(false)
+                          // setAjout(false)
                         } catch (err) {
                           console.error(err)
                           alert("Ajout echoué")
@@ -185,7 +185,7 @@ const ObjectiveView = () => {
                         try {
                           ajout_type();
                           alert("Ajout reussi");
-                          setAjout(false)
+                          // setAjout(false)
                         } catch (err) {
                           console.error(err)
                           alert("Ajout echoué")

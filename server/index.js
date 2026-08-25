@@ -1,27 +1,14 @@
 //Setup basique du serveur Express
+require('dotenv').config()
 const port = 3000;
 const express = require("express");
 const cors = require("cors");
 const app = express();
-app.use(express.json())
-const { Client } = require("pg");
-
-const corsOptions = {
-  allowedHeaders: ["Content-Type", "Authorization"],
-  origin: "*",
-  methods: ["GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"],
-  preflightContinue: false,
-  optionsSuccessStatus: 204,
-};
-const DB = new Client({
-  host: "localhost",
-  user: "postgres",
-  port: 5432,
-  password: "e",
-  database: "kairos",
-});
+const DB = require('./config/db')
+const corsOptions = require('./config/cors')
 
 app.use(cors(corsOptions));
+app.use(express.json())
 
 try {
   DB.connect();
@@ -127,9 +114,9 @@ app.put("/kairos/objectif/:id", (req, res) => {
 });
 
 app.post("/kairos/tache", (req, res) => {
-  const { libelle } = req.body;
-  const sql_insert_tache = "INSERT INTO tache(libelle) VALUES($1) RETURNING id_tache";
-  DB.query(sql_insert_tache, [libelle], (err, result) => {
+  const { libelle,type } = req.body;
+  const sql_insert_tache = "INSERT INTO tache(libelle,type) VALUES($1,$2) RETURNING id_tache";
+  DB.query(sql_insert_tache, [libelle,type], (err, result) => {
     if (err) {
       console.error("Erreur DB: ", err);
       res.sendStatus(500);
@@ -173,24 +160,6 @@ app.post("/kairos/semaine", (req, res) => {
       res.status(200).json(result);
     }
   });
-});
-
-app.put("kairos/semaine", (req, res) => {
-  const { id_semaine, note, nbre_taches } = req.body;
-  const sql_modif_semaine =
-    "UPDATE semaine SET note=$2,nbre_taches=$3 WHERE id_semaine=$4";
-  DB.query(
-    sql_modif_semaine,
-    [note, nbre_taches, id_semaine],
-    (err, result) => {
-      if (err) {
-        console.error("Erreur DB: ", err);
-        res.sendStatus(500);
-      } else {
-        res.sendStatus(200);
-      }
-    },
-  );
 });
 
 app.get("/kairos/semaine", (req, res) => {

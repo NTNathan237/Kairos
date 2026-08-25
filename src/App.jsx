@@ -6,18 +6,13 @@ import WeekView from './weekView'
 import TasksView from './tasksView'
 const API_URL = 'http://localhost:3000'
 
-const tachesInitiales = [
-  { id_tache: 1, libelle: 'Tache 1' },
-  { id_tache: 2, libelle: 'Tache 2' },
-  { id_tache: 3, libelle: 'Tâche 3' },
-]
 
 
 const App = () => {
-  const [taches, setTaches] = useState(tachesInitiales)
+  const [taches, setTaches] = useState([])
   const [assignations, setAssignations] = useState([])
 
-  useEffect(()=>{
+  useEffect(() => {
     async function fetchAss() {
       const res = await fetch(`${API_URL}/kairos/assignation`, {
         method: 'Get',
@@ -26,7 +21,7 @@ const App = () => {
       setAssignations(data)
     }
     fetchAss();
-  },[])
+  }, [])
 
   function handleDragEnd(event) {
     const { active, over } = event
@@ -52,7 +47,7 @@ const App = () => {
           libelle: tache.libelle,
           jour,
           id_semaine,
-          etat:"en_attente"
+          etat: "en_attente"
         }
       ])
     }
@@ -64,19 +59,19 @@ const App = () => {
       <>
 
         <header className='flex justify-around flex-row  items-center h-[80px] bg-white-500 text-lg p-5 top-0 bg-white mb-5'>
-          <h1 className='text-main font-extrabold text-[40px] animate-bounce'>Kairos</h1>
-          <h2 className='text-main font-bold'>Bienvenue GGX</h2>
+          <h1 className='text-main font-extrabold text-[40px]'>Kairos</h1>
+          <h2 className='text-main font-bold'>Bienvenue</h2>
         </header>
 
         <main className='bg-gray-300 pt-5 flex flex-row gap-[20px] justify-center items-end'>
           <ObjectiveView />
-          <WeekView  assignations={assignations} setAss={setAssignations} />
+          <WeekView assignations={assignations} setAss={setAssignations} />
           <TasksView taches={taches} setTaches={setTaches} />
         </main>
 
-        <footer className='bg-blue-600 flex flex-row justify-around p-5 text-white'>
-          <p className='text-bold btn'>Fait par GGX</p>
-          <p className='text-bold'>Tout droits resevés</p>
+        <footer className='bg-main flex flex-row justify-around p-5 text-white'>
+          <p className='font-bold'>Fait par GGX</p>
+          <p className='font-bold'>Tout droits resevés</p>
         </footer>
 
       </>

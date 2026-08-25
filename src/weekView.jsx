@@ -81,15 +81,13 @@ const JourCell = ({ jour, id_semaine, assignations, setAss }) => {
 }
 
 const WeekRow = ({ assignations, infos_semaine, semaines, setSemaines, setAss }) => {
-  console.log(assignations)
-  let nbre_taches = assignations.filter(ass=>ass.id_semaine==infos_semaine.id_semaine).length
-  const note = assignations.filter(ass=>ass.id_semaine==infos_semaine.id_semaine).filter(ass=>ass.etat=='fait').length
-  console.log(nbre_taches)
+  let nbre_taches = assignations.filter(ass => ass.id_semaine == infos_semaine.id_semaine).length
+  const note = assignations.filter(ass => ass.id_semaine == infos_semaine.id_semaine).filter(ass => ass.etat == 'fait').length
   return (
     <div className='week-row'>
       <div className='week_cel flex flex-col justify-evenly'>
         <h3 className='font-semibold'>{infos_semaine.date}</h3>
-        { }
+
         {
           note < nbre_taches / 2 ?
             <h3 className='font-semibold text-blue-950'><span className='text-red-500'>{note}</span>/{nbre_taches}</h3>
@@ -99,24 +97,25 @@ const WeekRow = ({ assignations, infos_semaine, semaines, setSemaines, setAss })
               :
               <h3 className='font-semibold text-blue-950'><span className='text-green-700'>{note}</span>/{nbre_taches}</h3>
         }
-        <button className='button bg-red-700 p-[1px]' onClick={() => {
-          const id_semaine = infos_semaine.id_semaine
+        <button className='button bg-red-800' onClick={() => {
+          if (confirm("Supprimer cette semaine et ses assignations ?")) {
+            const id_semaine = infos_semaine.id_semaine
 
-          const supprimer_semaine = async () => {
-            const res = await fetch(`${API_URL}/kairos/semaine/${id_semaine}`, {
-              method: 'DELETE',
-            });
+            const supprimer_semaine = async () => {
+              const res = await fetch(`${API_URL}/kairos/semaine/${id_semaine}`, {
+                method: 'DELETE',
+              });
 
-            setSemaines(semaines.filter(semaine => semaine.id_semaine !== id_semaine))
+              setSemaines(semaines.filter(semaine => semaine.id_semaine !== id_semaine))
+            }
+            try {
+              supprimer_semaine();
+              alert("Supression reussie");
+            } catch (err) {
+              console.error(err)
+              alert("Supression echoué")
+            }
           }
-          try {
-            supprimer_semaine();
-            alert("Supression reussie");
-          } catch (err) {
-            console.error(err)
-            alert("Supression echoué")
-          }
-
         }}>Supprimer</button>
       </div>
       {jours.map(jour => (
@@ -181,18 +180,14 @@ const WeekView = ({ assignations, setAss }) => {
         <button className='button bg-green-800' onClick={() => setAjout_semaine(true)}>Ajouter une semaine</button>
       </div>
       {ajout_semaine ?
-        <div className='flex flex-col justify-center items-center mt-3 bg-blue-100 rounded-lg border-main p-3'>
+        <div className='flex flex-col self-center justify-center items-center w-[65%] mt-3 bg-blue-100 rounded-lg border-main p-4'>
           <h3 className='text-main font-bold'>Date de debut de la semaine:</h3>
           <input type="date" ref={dateRef} id='titre' className='bg-white mb-1 border-[1px] rounded-lg p-2' />
           <div className='flex flex-row gap-5'>
             <button className='button bg-green-800' onClick={() => {
               const date = dateRef.current.value;
               let date_locale = new Date(date);
-
               date_locale = date_locale.toLocaleDateString()
-              console.log(date_locale)
-
-
               if (date) {
                 const ajout_semaine = async () => {
                   const res = await fetch(`${API_URL}/kairos/semaine`, {
