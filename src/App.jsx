@@ -58,7 +58,7 @@ const App = () => {
     <DndContext onDragEnd={handleDragEnd}>
       <>
 
-        <header className='flex justify-around flex-row  items-center h-[80px] bg-white-500 text-lg p-5 top-0 bg-white mb-5'>
+        <header className='flex justify-around flex-row  items-center h-[80px] bg-white-500 text-lg top-0 bg-white mb-5'>
           <h1 className='text-main font-extrabold text-[40px]'>Kairos</h1>
           <h2 className='text-main font-bold'>Bienvenue</h2>
         </header>

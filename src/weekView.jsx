@@ -97,7 +97,7 @@ const WeekRow = ({ assignations, infos_semaine, semaines, setSemaines, setAss })
               :
               <h3 className='font-semibold text-blue-950'><span className='text-green-700'>{note}</span>/{nbre_taches}</h3>
         }
-        <button className='button bg-red-800' onClick={() => {
+        <button className='button bg-red-800 p-1' onClick={() => {
           if (confirm("Supprimer cette semaine et ses assignations ?")) {
             const id_semaine = infos_semaine.id_semaine
 

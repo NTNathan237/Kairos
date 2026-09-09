@@ -41,15 +41,14 @@ Kairos/
 │   ├── App.jsx              # Point d'entrée, état global, DndContext
 │   ├── objectiveView.jsx    # Vue et gestion des objectifs
 │   ├── weekView.jsx         # Grille hebdomadaire
-│   ├── weekRow.jsx          # Une ligne (semaine) de la grille
-│   ├── weekTask.jsx         # Carte d'une tâche assignée
 │   ├── tasksView.jsx        # Panneau des tâches réutilisables (source du drag)
 │   ├── components/          # Composants partagés
 │   └── assets/              # Données statiques, icônes
 ├── server/
 │   ├── index.js             # Point d'entrée du serveur Express
 │   └── config/
-│       └── db.js            # Connexion PostgreSQL
+│       ├── db.js            # Connexion PostgreSQL
+│       └── cors.js          # Configuration Cors
 └── README.md
 ```
 
