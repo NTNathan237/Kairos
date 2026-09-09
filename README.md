@@ -103,8 +103,8 @@ L'application est accessible sur `http://localhost:5173`.
 
 ## Suite du projet
 
-Kairos est le premier maillon d'une suite de cinq applications (Kairos, My Fitness, Eureka, Second Gear, RelShip), destinées à être unifiées dans un dashboard personnel commun.
+Kairos est le premier maillon d'une suite de cinq applications (Kairos, My Fitness, Eureka, Second Gear, RelShip), destinées à être unifiées dans un dashboard personnel commun.De plus cette app
 
 ## Auteur
 
-GGX
+NTNathan_237
