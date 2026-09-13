@@ -5,8 +5,11 @@ const DB = require("../../config/db");
 
 router.get("/kairos/objectif", (req, res) => {
     const id_user = req.user.id_user
-  const sql_get_objectif = "SELECT * FROM objectif WHERE id_user = $1";
-  DB.query(sql_get_objectif, [id_user], (err, result) => {
+  const sql_get_objectif = id_user?
+   "SELECT * FROM objectif WHERE id_user = $1"
+   :
+   "SELECT * FROM objectif";
+  DB.query(sql_get_objectif,id_user? [id_user]:[], (err, result) => {
     if (err) {
       console.error("Erreur DB: ", err);
       res.sendStatus(500);
@@ -19,11 +22,16 @@ router.get("/kairos/objectif", (req, res) => {
 router.post("/kairos/objectif", (req, res) => {
   let { libelle, type } = req.body;
   const id_user = req.user.id_user
-  const sql_insert_objectif =
-    "INSERT INTO objectif(type,libelle,etat,id_user) VALUES($1,$2,$3,$4) RETURNING id_objectif";
+  const sql_insert_objectif =id_user?
+    "INSERT INTO objectif(type,libelle,etat,id_user) VALUES($1,$2,$3,$4) RETURNING id_objectif"
+    :
+    "INSERT INTO objectif(type,libelle,etat) VALUES($1,$2,$3) RETURNING id_objectif";
   DB.query(
     sql_insert_objectif,
-    [type, libelle, "en_attente",id_user],
+    id_user?
+    [type, libelle, "en_attente",id_user]
+    :
+    [type, libelle, "en_attente"],
     (err, result) => {
       if (err) {
         console.error("Erreur DB: ", err);

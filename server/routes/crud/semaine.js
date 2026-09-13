@@ -5,9 +5,11 @@ const DB = require("../../config/db");
 router.post("/semaine", (req, res) => {
   const { date } = req.body;
   const id_user = req.user.id_user
-  const sql_insert_semaine =
-    "INSERT INTO semaine(date,id_user) VALUES($1,$2) RETURNING id_semaine";
-  DB.query(sql_insert_semaine, [date,id_user], (err, result) => {
+  const sql_insert_semaine =id_user?
+    "INSERT INTO semaine(date,id_user) VALUES($1,$2) RETURNING id_semaine"
+    :
+    "INSERT INTO semaine(date) VALUES($1) RETURNING id_semaine";
+  DB.query(sql_insert_semaine,id_user? [date,id_user]:[date], (err, result) => {
     if (err) {
       console.error("Erreur DB: ", err);
       res.sendStatus(500);
@@ -19,8 +21,11 @@ router.post("/semaine", (req, res) => {
 
 router.get("/semaine", (req, res) => {
     const id_user = req.user.id_user
-  const sql_get_semaine = "SELECT * FROM semaine WHERE id_user=$1 ORDER BY date ASC";
-  DB.query(sql_get_semaine, [id_user], (err, result) => {
+  const sql_get_semaine =id_user?
+   "SELECT * FROM semaine WHERE id_user=$1 ORDER BY date ASC"
+   :
+   "SELECT * FROM semaine ORDER BY date ASC";
+  DB.query(sql_get_semaine,id_user? [id_user]:[], (err, result) => {
     if (err) {
       console.error("Erreur DB: ", err);
       res.sendStatus(500);

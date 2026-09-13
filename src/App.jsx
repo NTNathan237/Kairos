@@ -6,8 +6,6 @@ import WeekView from './weekView'
 import TasksView from './tasksView'
 const API_URL = 'http://localhost:3000'
 
-
-
 const App = () => {
   const [taches, setTaches] = useState([])
   const [assignations, setAssignations] = useState([])
@@ -58,9 +56,9 @@ const App = () => {
     <DndContext onDragEnd={handleDragEnd}>
       <>
 
-        <header className='flex justify-around flex-row  items-center h-[80px] bg-white-500 text-lg top-0 bg-white mb-5'>
+        <header className='flex justify-around flex-row  items-center h-[60px] bg-white-500 text-lg bg-white mb-5'>
           <h1 className='text-main font-extrabold text-[40px]'>Kairos</h1>
-          <h2 className='text-main font-bold'>Bienvenue</h2>
+          <h2 className='text-main font-bold'>Bienvenue cher utilisateur</h2>
         </header>
 
         <main className='bg-gray-300 pt-5 flex flex-row gap-[20px] justify-center items-end'>
@@ -70,7 +68,7 @@ const App = () => {
         </main>
 
         <footer className='bg-main flex flex-row justify-around p-5 text-white'>
-          <p className='font-bold'>Fait par GGX</p>
+          <p className='font-bold'>Fait par NTNathan_237</p>
           <p className='font-bold'>Tout droits resevés</p>
         </footer>
 

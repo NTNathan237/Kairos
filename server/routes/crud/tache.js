@@ -6,9 +6,11 @@ const DB = require("../../config/db");
 router.post("/tache", (req, res) => {
   const { libelle, type } = req.body;
   const id_user = req.user.id_user
-  const sql_insert_tache =
-    "INSERT INTO tache(libelle,type,id_user) VALUES($1,$2,$3) RETURNING id_tache";
-  DB.query(sql_insert_tache, [libelle, type,id_user], (err, result) => {
+  const sql_insert_tache =id_user?
+    "INSERT INTO tache(libelle,type,id_user) VALUES($1,$2,$3) RETURNING id_tache"
+    :
+    "INSERT INTO tache(libelle,type) VALUES($1,$2) RETURNING id_tache";
+  DB.query(sql_insert_tache,id_user? [libelle, type,id_user]:[libelle,type], (err, result) => {
     if (err) {
       console.error("Erreur DB: ", err);
       res.sendStatus(500);
@@ -19,8 +21,9 @@ router.post("/tache", (req, res) => {
 });
 router.get("/tache", (req, res) => {
     const id_user = req.user.id_user
-  const sql_get_tache = "SELECT * FROM tache WHERE id_user=$1";
-  DB.query(sql_get_tache, [id_user], (err, result) => {
+  
+  const sql_get_tache =id_user? "SELECT * FROM tache WHERE id_user=$1":"SELECT * FROM tache";
+  DB.query(sql_get_tache,id_user? [id_user]:[], (err, result) => {
     if (err) {
       console.error("Erreur DB: ", err);
       res.sendStatus(500);

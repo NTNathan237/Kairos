@@ -1,4 +1,5 @@
 import React, { useEffect, useRef, useState } from 'react'
+import { InfoIcon, TrashIcon } from 'lucide-react'
 const API_URL = 'http://localhost:3000'
 
 
@@ -38,7 +39,7 @@ const Obj = ({ obj, objs, setObjs }) => {
               headers: {
                 'Content-type': 'application/json',
               },
-              body: JSON.stringify({ etat:e.target.value })
+              body: JSON.stringify({ etat: e.target.value })
             })
 
           }}
@@ -51,7 +52,7 @@ const Obj = ({ obj, objs, setObjs }) => {
         </select>
       </div>
       <div className="flex justify-center items-center  flex-row gap-[10px] ">
-        <img src="src/assets/info-circle.svg" alt="info-bulle" />
+        <InfoIcon color='' />
         <span className="font-bold text-[15px] text-red-500 cursor-pointer" onClick={() => {
           if (confirm("Supprimer cet objectif ?")) {
             const id_objectif = obj.id_objectif
@@ -220,7 +221,7 @@ const ObjectiveView = () => {
                         } else {
                           return
                         }
-                      }}>X</span>
+                      }}><TrashIcon color='crimson' /></span>
                   </h3>
                   {objs.map(obj => {
                     if (type.libelle == obj.type) {

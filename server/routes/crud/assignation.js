@@ -5,11 +5,16 @@ const DB = require("../../config/db");
 router.post("/assignation", (req, res) => {
   const { libelle, jour, id_semaine, id_tache } = req.body;
   const id_user = req.user.id_user
-  const sql_insert_assing =
-    "INSERT INTO assignation(libelle,jour,id_semaine,etat,id_tache,id_user) VALUES($1,$2,$3,$4,$5,$6) RETURNING id_ass";
+  const sql_insert_assing =id_user?
+    "INSERT INTO assignation(libelle,jour,id_semaine,etat,id_tache,id_user) VALUES($1,$2,$3,$4,$5,$6) RETURNING id_ass"
+    :
+    "INSERT INTO assignation(libelle,jour,id_semaine,etat,id_tache) VALUES($1,$2,$3,$4,$5) RETURNING id_ass";
   DB.query(
     sql_insert_assing,
-    [libelle, jour, id_semaine, "en_attente", id_tache,id_user],
+    id_user?
+    [libelle, jour, id_semaine, "en_attente", id_tache,id_user]
+    :
+    [libelle, jour, id_semaine, "en_attente", id_tache],
     (err, result) => {
       if (err) {
         console.error("Erreur DB: ", err);
