@@ -4,7 +4,7 @@
 
 Kairos est une application de productivité personnelle qui permet d'organiser sa semaine à court terme (tâches) et de suivre sa progression à long terme (objectifs) en un seul endroit. Pensée pour un usage desktop, elle combine une grille hebdomadaire interactive avec un système de suivi d'objectifs catégorisés.
 
-Premier projet d'une suite de cinq applications destinées à converger vers un dashboard unifié.
+Premier projet d'une suite de quatre applications destinées à converger vers un dashboard unifié.
 
 ---
 
@@ -197,10 +197,9 @@ npm run build
 
 Kairos est le premier maillon d'une suite de cinq applications :
 1. **Kairos** — Planification hebdomadaire (ce projet)
-2. **My Fitness** — Suivi d'entraînement
-3. **Eureka** — Gestion d'idées et créativité
-4. **Second Gear** — Suivi de projet personnel
-5. **RelShip** — Gestion des relations personnelles
+2. **Eureka** — Gestion d'idées et créativité
+3. **Second Gear** — Carnet de conseil et astuces
+4. **RelShip** — Gestion des relations personnelles
 
 Ces applications seront unifiées dans un **dashboard personnel commun**.
 
@@ -208,7 +207,7 @@ Ces applications seront unifiées dans un **dashboard personnel commun**.
 
 ## 👤 Auteur
 
-**NTNathan_237** (avec contributeur GGX)
+**NTNathan_237**
 
 ---
 
@@ -218,18 +217,7 @@ ISC
 
 ---
 
-## 🤝 Contribuer
-
-Les contributions sont bienvenues ! N'hésitez pas à :
-1. Fork le projet
-2. Créer une branche pour votre fonctionnalité (`git checkout -b feature/nom-feature`)
-3. Committer vos changements
-4. Pousser vers la branche
-5. Ouvrir une Pull Request
-
----
-
-## 💡 Prochaines étapes suggérées
+## 💡 Prochaines étapes
 
 - Ajouter l'authentification multi-utilisateur
 - Mettre en place une suite de tests (Jest, Vitest)
