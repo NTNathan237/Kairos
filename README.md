@@ -1,74 +1,114 @@
 # Kairos
 
-Application de planification de tâches et de suivi d'objectifs, pensée pour organiser sa semaine (tâches) et sa progression sur le long terme (objectifs) en un seul endroit.
+**Application web de planification hebdomadaire de tâches et de suivi d'objectifs**
 
-Premier projet d'une suite de cinq applications de productivité personnelle, destinées à terme à converger vers un dashboard unifié.
+Kairos est une application de productivité personnelle qui permet d'organiser sa semaine à court terme (tâches) et de suivre sa progression à long terme (objectifs) en un seul endroit. Pensée pour un usage desktop, elle combine une grille hebdomadaire interactive avec un système de suivi d'objectifs catégorisés.
 
-## Aperçu
+Premier projet d'une suite de quatre applications destinées à converger vers un dashboard unifié.
+
+---
+
+## 🎯 Aperçu
 
 Kairos distingue deux échelles de temps :
 
 - **Les tâches** — organisées sur une grille hebdomadaire (semaine × jour), déplaçables par glisser-déposer, avec un statut évolutif (En attente / Fait / Échec)
-- **Les objectifs** — suivis sur le plus long terme, classés par type, indépendants du rythme hebdomadaire
+- **Les objectifs** — suivis sur le long terme, classés par type personnalisable, indépendants du rythme hebdomadaire
 
-## Fonctionnalités
+---
 
-- 📅 Grille hebdomadaire avec vue par semaine (lundi à dimanche)
-- 🖱️ Glisser-déposer des tâches vers un jour précis (via `dnd-kit`)
-- 🔁 Tâches réutilisables — une même tâche peut être assignée à plusieurs jours sans duplication
-- 🎯 Suivi d'objectifs, catégorisés par type personnalisable
-- 🟢🔵🔴 Statuts visuels (Fait / En attente / Échec) sur tâches et objectifs
-- 📊 Score de progression par semaine (tâches accomplies / tâches prévues)
-- 💾 Persistance complète des données via une API REST connectée à PostgreSQL
+## ✨ Fonctionnalités
 
-## Stack technique
+- 📅 **Grille hebdomadaire** avec vue par semaine (lundi à dimanche)
+- 🖱️ **Glisser-déposer** interactif des tâches vers un jour précis (via `@dnd-kit`)
+- 🔁 **Tâches réutilisables** — une même tâche peut être assignée à plusieurs jours sans duplication
+- 🎯 **Suivi d'objectifs** catégorisés par type personnalisable
+- 🟢🔵🔴 **Statuts visuels** (Fait / En attente / Échec) sur tâches et objectifs
+- 📊 **Score de progression** par semaine (tâches accomplies / tâches prévues)
+- 💾 **Persistance complète** des données via une API REST connectée à PostgreSQL
 
-**Frontend**
-- React 19 + Vite
-- Tailwind CSS
-- [`@dnd-kit/core`](https://dndkit.com/) pour le glisser-déposer
+---
 
-**Backend**
-- Node.js + Express
-- PostgreSQL (`pg`)
-- API REST (routes `taches`, `objectifs`, `types`, `semaines`, `assignations`)
+## 🛠️ Stack technique
 
-## Structure du projet
+### Frontend
+- **React 19** + Vite
+- **Tailwind CSS** pour le styling
+- **@dnd-kit/core** pour le glisser-déposer
+- **Shadcn/ui** & **Radix UI** pour les composants
+- **Lucide React** pour les icônes
+
+### Backend
+- **Node.js** + Express
+- **PostgreSQL** avec `pg` et `pg-promise`
+- **API REST** (routes : `taches`, `objectifs`, `types`, `semaines`, `assignations`)
+- **Authentication** avec JWT et bcryptjs
+- **WebSocket** support via Socket.IO
+
+---
+
+## 📁 Structure du projet
 
 ```
 Kairos/
-├── src/
-│   ├── App.jsx              # Point d'entrée, état global, DndContext
-│   ├── objectiveView.jsx    # Vue et gestion des objectifs
-│   ├── weekView.jsx         # Grille hebdomadaire
-│   ├── tasksView.jsx        # Panneau des tâches réutilisables (source du drag)
-│   ├── components/          # Composants partagés
-│   └── assets/              # Données statiques, icônes
-├── server/
-│   ├── index.js             # Point d'entrée du serveur Express
-│   └── config/
-│       ├── db.js            # Connexion PostgreSQL
-│       └── cors.js          # Configuration Cors
-└── README.md
+├── src/                         # Frontend React (Vite)
+│   ├── App.jsx                  # Point d'entrée, état global, DndContext
+│   ├── weekView.jsx             # Grille hebdomadaire
+│   ├── tasksView.jsx            # Panneau des tâches réutilisables (source du drag)
+│   ├── objectiveView.jsx        # Vue et gestion des objectifs
+│   ├── components/              # Composants réutilisables
+│   └── assets/                  # Données statiques, icônes
+│
+├── server/                      # Backend Express
+│   ├── index.js                 # Point d'entrée du serveur
+│   ├── config/                  # Configuration
+│   │   ├── db.js                # Connexion PostgreSQL
+│   │   └── cors.js              # Configuration CORS
+│   ├── routes/                  # Routes API
+│   │   ├── authRoutes.js        # Authentification
+│   │   └── crud/                # CRUD pour tâches, objectifs, etc.
+│   ├── middlewares/             # Middlewares Express
+│   └── package.json             # Dépendances backend
+│
+├── package.json                 # Dépendances frontend
+├── vite.config.js               # Configuration Vite
+├── tailwind.config.js           # Configuration Tailwind CSS
+├── index.html                   # Point d'entrée HTML
+└── README.md                    # Documentation
 ```
 
-## Modèle de données
+---
 
-Le cœur du modèle repose sur une séparation entre **tâche** (le modèle réutilisable) et **assignation** (son instance placée sur un jour donné) :
+## 🔗 Fonctionnement global
+
+L'application fonctionne selon ce flux :
+
+1. **Chargement initial** — Au démarrage, l'application charge toutes les assignations depuis `/kairos/assignation`
+2. **Glisser-déposer** — L'utilisateur drag-and-drop une tâche du panneau latéral vers un jour de la grille
+3. **Création d'assignation** — Un POST vers `/kairos/assignation` crée le lien entre la tâche et le jour
+4. **Mise à jour de l'état** — L'état local (React) est synchronisé avec la base de données PostgreSQL
+
+Le contexte **DndContext** de `@dnd-kit` encapsule toute l'application pour gérer les interactions de drag-and-drop.
+
+---
+
+## 🗄️ Modèle de données
 
 | Table | Rôle |
 |---|---|
 | `taches` | Tâches réutilisables (libellé) |
-| `assignations` | Instance d'une tâche sur un jour/semaine donné, avec son propre statut |
+| `assignations` | Instance d'une tâche sur un jour/semaine donné, avec statut propre |
 | `objectifs` | Objectifs long terme, liés à un type |
-| `types` | Catégories d'objectifs |
+| `types` | Catégories d'objectifs (personnalisables) |
 | `semaines` | Métadonnées de chaque semaine (score, nombre de tâches) |
 
-## Installation
+---
+
+## 🚀 Installation et démarrage
 
 ### Prérequis
-- Node.js
-- PostgreSQL
+- **Node.js** (v18+)
+- **PostgreSQL** (v12+)
 
 ### Backend
 
@@ -77,10 +117,22 @@ cd server
 npm install
 ```
 
-Configurer la connexion à la base dans `server/config/db.js`, puis :
+Configurer la connexion à la base de données dans `server/config/db.js` :
+
+```javascript
+const db = new pgPromise.Database({
+  user: 'votre_utilisateur',
+  password: 'votre_mdp',
+  host: 'localhost',
+  port: 5432,
+  database: 'kairos'
+});
+```
+
+Puis démarrer le serveur :
 
 ```bash
-node index.js
+npm start
 ```
 
 Le serveur démarre par défaut sur `http://localhost:3000`.
@@ -92,19 +144,83 @@ npm install
 npm run dev
 ```
 
-L'application est accessible sur `http://localhost:5173`.
+L'application React est accessible sur `http://localhost:5173`.
 
+### Build pour la production
 
-## Limitations connues
+```bash
+npm run build
+```
 
-- Pas d'authentification — l'application est actuellement mono-utilisateur
-- Pas de tests automatisés
-- Interface non responsive (pensée pour un usage desktop)
+---
 
-## Suite du projet
+## 📝 API Endpoints
 
-Kairos est le premier maillon d'une suite de cinq applications (Kairos, My Fitness, Eureka, Second Gear, RelShip), destinées à être unifiées dans un dashboard personnel commun.De plus cette app
+### Authentification
+- `POST /kairos/auth/login` — Connexion utilisateur
+- `POST /kairos/auth/register` — Création de compte
 
-## Auteur
+### Tâches
+- `GET /kairos/tache` — Récupérer toutes les tâches
+- `POST /kairos/tache` — Créer une nouvelle tâche
+- `PUT /kairos/tache/:id` — Modifier une tâche
+- `DELETE /kairos/tache/:id` — Supprimer une tâche
 
-NTNathan_237
+### Assignations
+- `GET /kairos/assignation` — Récupérer toutes les assignations
+- `POST /kairos/assignation` — Créer une assignation (drag-drop)
+- `PUT /kairos/assignation/:id` — Modifier le statut d'une assignation
+- `DELETE /kairos/assignation/:id` — Supprimer une assignation
+
+### Objectifs
+- `GET /kairos/objectif` — Récupérer tous les objectifs
+- `POST /kairos/objectif` — Créer un objectif
+- `PUT /kairos/objectif/:id` — Modifier un objectif
+- `DELETE /kairos/objectif/:id` — Supprimer un objectif
+
+### Autres
+- `GET /kairos/types` — Récupérer les types d'objectifs
+- `GET /kairos/semaines` — Récupérer les métadonnées des semaines
+
+---
+
+## ⚠️ Limitations connues
+
+- **Pas d'authentification utilisateur** — L'application est actuellement mono-utilisateur
+- **Pas de tests automatisés** — Aucune suite de tests
+- **Interface non responsive** — Conçue pour une utilisation desktop
+- **Pas de versioning des données** — Aucun historique des modifications
+
+---
+
+## 🔮 Suite du projet
+
+Kairos est le premier maillon d'une suite de cinq applications :
+1. **Kairos** — Planification hebdomadaire (ce projet)
+2. **Eureka** — Gestion d'idées et créativité
+3. **Second Gear** — Carnet de conseil et astuces
+4. **RelShip** — Gestion des relations personnelles
+
+Ces applications seront unifiées dans un **dashboard personnel commun**.
+
+---
+
+## 👤 Auteur
+
+**NTNathan_237**
+
+---
+
+## 📜 Licence
+
+ISC
+
+---
+
+## 💡 Prochaines étapes
+
+- Ajouter l'authentification multi-utilisateur
+- Mettre en place une suite de tests (Jest, Vitest)
+- Rendre l'interface responsive (mobile/tablet)
+- Ajouter la synchronisation en temps réel (WebSocket)
+- Créer une intégration avec les autres applications de la suite
